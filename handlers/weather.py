@@ -4,6 +4,7 @@ import aioschedule
 import sqlite3 as sq
 import requests
 import json
+from config_reader import config
 
 created_tasks = {}
 
@@ -40,7 +41,7 @@ async def get_weather():
                   'thunderstorm-with-rain': 'дождь с грозой', 'thunderstorm-with-hail': 'гроза с градом'
                   }
     url_yandex = f'https://api.weather.yandex.ru/v2/forecast?lat=57.76791&lon=40.926894&[lang=ru_RU]'
-    yandex_req = requests.get(url_yandex, headers={'X-Yandex-API-Key': "fdd410bc-18ff-414d-a902-7f2f5fd6b8a9"})
+    yandex_req = requests.get(url_yandex, headers={'X-Yandex-API-Key': config.yandex_api.get_secret_value()})
     data = json.loads(yandex_req.text)
     temp = data['fact']['temp']
     humidity = data['fact']['humidity']
