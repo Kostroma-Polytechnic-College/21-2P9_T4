@@ -9,10 +9,10 @@ async def db_start():
     cur.execute("CREATE TABLE IF NOT EXISTS profile(user_id TEXT PRIMARY KEY, times TEXT)")
     db.commit()
 
-async def create_profile(user_id):
-    user = cur.execute("SELECT 1 FROM profile WHERE user_id == '{key}'".format(key=user_id)).fetchone()
+async def create_profile(user_id, time):
+    user = cur.execute("SELECT 1 FROM profile WHERE user_id == ?", (user_id,)).fetchone()
     if not user:
-        cur.execute("INSERT INTO profile VALUES(?,?)", (user_id,''))
+        cur.execute("INSERT INTO profile VALUES(?, ?)", (user_id, time))
         db.commit()
 
 async def edit_profile(state, user_id):
@@ -23,6 +23,6 @@ async def edit_profile(state, user_id):
     cur.execute("UPDATE profile SET times = ? WHERE user_id == ?", (time, user_id))
     db.commit()
 
-async def get_kg(user_id):
+async def get_user(user_id):
     user = cur.execute("SELECT times FROM profile WHERE user_id == ?", (user_id,)).fetchone()
     return user[0] if user else "не указан"

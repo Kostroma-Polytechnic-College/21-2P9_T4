@@ -13,7 +13,9 @@ router = Router()
 async def profile(message: Message, state: FSMContext):
     await state.set_state(Form.time)
     await message.answer("Введите время в которое будет присылаться прогноз погоды. Формат времени - HH:mm")
-    await database.create_profile(user_id= message.from_user.id)
+    profile_exists = await database.get_user(user_id=message.from_user.id)
+    if profile_exists == "не указан":
+        await database.create_profile(user_id=message.from_user.id , time="00:00")
 
 @router.message(Form.time)
 async def profile(message: Message, state: FSMContext):
