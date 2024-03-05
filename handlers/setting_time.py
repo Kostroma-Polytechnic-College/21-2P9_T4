@@ -20,7 +20,7 @@ async def profile(message: Message, state: FSMContext):
 @router.message(Form.time)
 async def profile(message: Message, state: FSMContext):
     await state.update_data(time = message.text)
-    if re.match(r'[0-5]{1}[0-9]{1}:[0-5]{1}[0-9]{1}', message.text):
+    if isinstance(message.text, str) and re.match(r'(?:[01]\d|2[0-3]):[0-5]\d', message.text):
         await database.edit_profile(state, user_id=message.from_user.id)
         await state.clear()
         await message.answer(f"Время отправки прогноза погоды: {message.text}")
