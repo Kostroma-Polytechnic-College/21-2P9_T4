@@ -1,35 +1,25 @@
 import asyncio
-from aiogram import Bot
-import aioschedule
-import sqlite3 as sq
 import requests
 import json
+
+from aiogram import Bot
 from config_reader import config
+from datetime import datetime
+from data import database
 
-created_tasks = {}
-
-async def noon_print(bot: Bot, chat_id):
-    temp, humidity, feels_like, wind_speed, pressure_mm, current_condition = await get_weather()
-    await bot.send_message(chat_id=f"{chat_id}",text=f"Погода в Костроме \nТемпература: {temp}°C (ощущается как {feels_like}°C) \nСкорость ветра: {wind_speed} м/c\nВлажность: {humidity}%  \nДавление: {pressure_mm} (в мм рт.ст.)\nСостояние погоды: {current_condition}")
+async def send_weather(bot: Bot, nearest_time):
+    lsUsers = await database.get_listUsers(nearest_time)
+    textWr = await textWeather()
+    for user_id in lsUsers:
+        await bot.send_message(chat_id=f"{user_id[0]}",text=textWr)
 
 async def scheduler(bot: Bot):
-    db = sq.connect("tg.db")
-    cur = db.cursor()
     while True:
-        cur.execute("SELECT * FROM profile")
-        for time_value in cur.fetchall():
-            chat_id = time_value[0]
-            time = time_value[1]
-            if chat_id in created_tasks:
-                if created_tasks[chat_id]["time"] != time:
-                    aioschedule.cancel_job(created_tasks[chat_id]["job"])
-                    del created_tasks[chat_id]
-            elif (chat_id, time) not in created_tasks:
-                job = aioschedule.every().day.at(time_value[1]).do(noon_print, bot, chat_id)
-                created_tasks[chat_id] = {"job": job, "time": time}
-        await aioschedule.run_pending()
-        await asyncio.sleep(5)
-
+        currentTime = datetime.now().strftime("%H:%M")
+        nearestTime = await database.get_nearestTime()
+        if nearestTime == currentTime:
+            await send_weather(bot, currentTime)
+        await asyncio.sleep(60)
 
 async def get_weather():
     conditions = {'clear': 'ясно', 'partly-cloudy': 'малооблачно', 'cloudy': 'облачно с прояснениями',
@@ -52,3 +42,8 @@ async def get_weather():
     current_condition = conditions.get(condition)
 
     return temp,humidity,feels_like,wind_speed,pressure_mm,current_condition
+
+async def textWeather():
+    temp, humidity, feels_like, wind_speed, pressure_mm, current_condition = await get_weather()
+    return (f"Погода в Костроме \nТемпература: {temp}°C (ощущается как {feels_like}°C) \nСкорость ветра: {wind_speed} м/c\nВлажность: {humidity}%" 
+    f"\nДавление: {pressure_mm} (в мм рт.ст.)\nСостояние погоды: {current_condition}")
