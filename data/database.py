@@ -56,14 +56,3 @@ async def get_nearestTime():
     nearestTime = min(times, key=lambda x: abs(datetime.strptime(x[0], '%H:%M') - datetime.strptime(current_time, '%H:%M')))[0]
     await close_db(db, cur)
     return nearestTime
-
-async def delete_user(user_id):
-    db, cur = await connect_db()
-    cur.execute("DELETE FROM profile WHERE user_id = ?", (user_id,))
-    db.commit()
-    if cur.rowcount > 0:
-        result = True  
-    else:
-        result = False
-    await close_db(db, cur)
-    return result
