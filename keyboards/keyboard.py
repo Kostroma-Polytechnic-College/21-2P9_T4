@@ -4,8 +4,7 @@ main_kb = ReplyKeyboardMarkup(
     keyboard=[
         [
             KeyboardButton(text = "Установить время"),
-            KeyboardButton(text = "Получить текущую погоду"),
-            KeyboardButton(text = "Отменить рассылку")
+            KeyboardButton(text = "Получить текущую погоду")
         ]
     ],
     resize_keyboard= True,
