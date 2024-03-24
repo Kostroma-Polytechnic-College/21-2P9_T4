@@ -38,7 +38,7 @@ async def featureWeather(message: Message):
 
 @router.message((F.text.lower() == "назад"))
 async def featureWeather(message: Message):
-    await message.answer(text="Возврат в начальное меню",reply_markup=reply.rep_kb)
+    await message.answer(text="Возвращение в главное меню",reply_markup=reply.rep_kb)
 
 @router.message(F.content_type == ContentType.LOCATION)
 async def handle_location(message: Message):
