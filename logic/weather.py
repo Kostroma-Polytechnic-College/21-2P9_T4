@@ -5,14 +5,14 @@ from datetime import datetime,timedelta
 from config_reader import config
 from datetime import datetime
 
-async def connect_yandex():
-    url_yandex = f'https://api.weather.yandex.ru/v2/forecast?lat=57.76791&lon=40.926894&[lang=ru_RU]'
+async def connect_yandex(latitude,longitude):
+    url_yandex = f'https://api.weather.yandex.ru/v2/forecast?lat={latitude}&lon={longitude}&[lang=ru_RU]'
     yandex_req = requests.get(url_yandex, headers={'X-Yandex-API-Key': config.yandex_api.get_secret_value()})
     data = json.loads(yandex_req.text)
     return data
 
-async def get_weather():
-    data = await connect_yandex()
+async def get_weather(latitude,longitude):
+    data = await connect_yandex(latitude,longitude)
 
     temp = data['fact']['temp']
     humidity = data['fact']['humidity']
@@ -32,8 +32,8 @@ async def get_weather():
         'condition': current_condition
     }
 
-async def get_weatherForecast(forecast_dates):
-    data = await connect_yandex()
+async def get_weatherForecast(latitude,longitude,forecast_dates):
+    data = await connect_yandex(latitude,longitude)
     
     forecasts = []
     for forecast_date in forecast_dates:
@@ -59,13 +59,13 @@ async def get_weatherForecast(forecast_dates):
     
     return forecasts
 
-async def textWeather(forecast_dates=None):
+async def textWeather(latitude,longitude,forecast_dates=None):
     if forecast_dates:
-        forecasts = await get_weatherForecast(forecast_dates)
+        forecasts = await get_weatherForecast(latitude,longitude, forecast_dates)
     else:
-        forecasts = [await get_weather()]
+        forecasts = [await get_weather(latitude,longitude)]
 
-    weather_message = "Прогноз погоды в городе Кострома:\n\n"
+    weather_message = "Прогноз погоды в вашей геопозиции:\n\n"
     for forecast in forecasts:
         weather_message += f"Дата: {forecast['date']}\n"
         weather_message += f"Температура: {forecast['temp']}°C (ощущается как {forecast['feels_like']}°C)\n"

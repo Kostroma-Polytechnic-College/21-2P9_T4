@@ -9,8 +9,22 @@ rep_kb = ReplyKeyboardMarkup(
         [
             KeyboardButton(text = "Отменить рассылку"),
             KeyboardButton(text = "Получить будущую погоду")
+        ],
+        [
+            KeyboardButton(text = "Установить геопозицию")
         ]
     ],
     resize_keyboard= True,
     input_field_placeholder="Выберите действие из меню"
 ) 
+
+spec_kb = ReplyKeyboardMarkup(
+    keyboard=[
+        [
+            KeyboardButton(text = "Отправить геопозицию", request_location=True),
+            KeyboardButton(text = "Назад")
+        ]
+    ],
+    resize_keyboard= True,
+    input_field_placeholder="Выберите действие из меню"
+)
