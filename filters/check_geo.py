@@ -1,13 +1,11 @@
 from aiogram.filters import BaseFilter
 from aiogram.types import Message
-from data import database
+from data import dbget
 
 class CheckDBField(BaseFilter):
     async def __call__(self, message: Message) -> bool:
-        db, cur = await database.connect_db()
-        result = cur.execute("SELECT latitude FROM profile WHERE user_id = ?", (message.from_user.id,)).fetchone()
-        await database.close_db(db, cur)
-        if result:
+        result = await dbget.get_geo(message.from_user.id)
+        if result is not None and result != (None, None):
             return True
         await message.answer("Прежде чем выполнять это действие, укажите свою геопозицию")
         return False

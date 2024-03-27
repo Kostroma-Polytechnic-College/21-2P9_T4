@@ -28,7 +28,7 @@ async def cansel_mailing(message: Message):
     else:
         await message.answer("У вас не была включена рассылка")
 
-@router.message((F.text.lower() == "получить будущую погоду") | (F.text.lower() == "/get_weatherForecast"), CheckDBField())
+@router.message((F.text.lower() == "получить будущую погоду") | (F.text.lower() == "/get_weatherforecast"), CheckDBField())
 async def featureWeather(message: Message):
     await message.answer("Выберите дату для получения прогноза погоды", reply_markup=inline.inl_kb)
 
@@ -44,8 +44,8 @@ async def featureWeather(message: Message):
 async def handle_location(message: Message):
     latitude = message.location.latitude
     longitude = message.location.longitude
-    profile_exists = await dbget.get_user(user_id=message.from_user.id)
-    if profile_exists == "не указан":
+    user = await dbget.get_user(user_id=message.from_user.id)
+    if user == None:
         await database.create_profile(user_id=message.from_user.id)
     await dbedit.edit_geo(message.from_user.id, latitude, longitude)
     await message.answer(f"Ваша геопозиция: {latitude}, {longitude}")

@@ -5,7 +5,7 @@ async def get_user(user_id):
     db, cur = await database.connect_db()
     user = cur.execute("SELECT times FROM profile WHERE user_id == ?", (user_id,)).fetchone()
     await database.close_db(db, cur)
-    return user[0] if user else "не указан"
+    return user
 
 async def get_listUsers(nearest_time):
     db, cur = await database.connect_db()
@@ -25,6 +25,7 @@ async def get_nearestTime():
 
 async def get_geo(user_id):
     db, cur = await database.connect_db()
-    user = cur.execute("SELECT latitude, longitude FROM profile WHERE user_id == ?", (user_id,)).fetchone()
+    geo = cur.execute("SELECT latitude, longitude FROM profile WHERE user_id == ?", (user_id,)).fetchone()
     await database.close_db(db, cur)
-    return user if user else "не указан"
+    
+    return geo
